@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-label="SRC SKILL">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070b12"/>
+      <stop offset="100%" stop-color="#101826"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="640" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1280" height="640" fill="none" stroke="#1f6feb" stroke-opacity="0.25"/>
+  <line x1="80" y1="312" x2="1200" y2="312" stroke="#2ea043" stroke-opacity="0.55" stroke-width="2"/>
+  <text x="640" y="250" text-anchor="middle" fill="#f0f6fc" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="84" font-weight="700">SRC SKILL</text>
+  <text x="640" y="370" text-anchor="middle" fill="#8b949e" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="32">Grok Identity Pack</text>
+  <text x="640" y="430" text-anchor="middle" fill="#58a6ff" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="22">Authorized SRC · Black-box hunting · White-box 0day</text>
+</svg>

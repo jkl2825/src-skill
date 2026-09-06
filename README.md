@@ -1,113 +1,120 @@
-# src-skill
+<p align="center">
+  <img src="docs/banner.svg" alt="SRC SKILL" width="100%">
+</p>
 
-给 [Grok](https://grok.com) / Claude Code 类 Agent 用的 **中国 SRC 黑盒挖洞 + 白盒 0day 审计** 身份包。
+<p align="center">
+  <b>Drop this pack into Grok. Say “挖 XX集团”. It hunts like an SRC researcher, not a scanner.</b>
+</p>
 
-不是扫描器，也不是「每个 path 喷 `'`」。核心是：理解业务和代码意图，找开发者认知盲区；假洞不堆、低危不交、CORS 不挖。
+<p align="center">
+  <a href="https://github.com/jkl2825/src-skill/stargazers"><img src="https://img.shields.io/github/stars/jkl2825/src-skill?style=flat-square" alt="stars"></a>
+  <a href="https://github.com/jkl2825/src-skill/network/members"><img src="https://img.shields.io/github/forks/jkl2825/src-skill?style=flat-square" alt="forks"></a>
+  <img src="https://img.shields.io/badge/Grok-identity%20pack-1f6feb?style=flat-square" alt="Grok">
+  <img src="https://img.shields.io/badge/license-MIT-2ea043?style=flat-square" alt="MIT">
+  <img src="https://img.shields.io/badge/authorized%20research-only-8b949e?style=flat-square" alt="authorized">
+</p>
 
-**仅用于已授权的安全研究 / SRC 众测 / 白盒审计。** 未授权目标不要用。
+<p align="center">
+  English below · <a href="#中文">中文</a>
+</p>
 
 ---
 
-## 这包是什么
+## Why this exists
 
-桌面上的 `src skill` 不是单个 `SKILL.md`，而是一整套会覆盖 `~/.grok` 的身份：
+Most “AI pentest” prompts dump `' OR 1=1` on every path and call it a report.
 
-| 层 | 路径 | 作用 |
+This pack is the opposite: **an identity overlay for Grok** (also works as a Claude-style skill). After install, the agent:
+
+- keeps a seed queue and finishes **one seed before opening the next**
+- extracts JS for paths, salts, hidden routes, demo accounts
+- tests unauth first; after login, swaps object IDs
+- runs injection / SSRF / XSS / RCE only on **differential** parameters
+- writes Chinese SRC reports in one fixed format
+- **does not hunt CORS**, does not farm low findings, does not ask “should I continue?”
+
+**Authorized SRC / bug bounty / white-box audit only.** Do not point it at systems you do not have permission to test.
+
+## What’s inside
+
+| Layer | Path | Job |
 |---|---|---|
-| 身份 | `AGENTS.md` | 中文、授权研究员、最短执行备忘 |
-| 纪律 | `rules/` | 挖什么、怎么挖、报告怎么写、自由跳节奏 |
-| 技能 | `skills/skill/SKILL.md` | 触发词、进站开哪篇知识库、红线 |
-| 知识库 | `skills/skill/知识库/` | 48 篇手法（进站先看 `打穿短表.md`） |
-| 测绘 | `mcp-servers/fofa_MCP/` | FOFA 三账号自动切号 |
-| 浏览器 | `bin/playwright-dual-slot.mjs` | Playwright MCP 启动脚本 |
-| 装载 | `给朋友的提示词.txt` | 把包拖进 Grok 对话即可覆盖本机身份 |
+| Identity | `AGENTS.md` | Chinese researcher persona |
+| Discipline | `rules/` | scope, value matrix, report format, hunt loop |
+| Skill | `skills/skill/SKILL.md` | triggers + which module to open |
+| Playbook | `skills/skill/知识库/` | 48 modules; start with `打穿短表.md` |
+| Recon | `mcp-servers/fofa_MCP/` | FOFA with 3-key failover |
+| Browser | `bin/playwright-dual-slot.mjs` | Playwright MCP |
+| Install | `给朋友的提示词.txt` | paste into Grok, drop the folder |
 
-`config.toml` 里的路径是占位符 `C:\Users\USER\...`，FOFA Key 全空。装到自己机器时按提示词改成本机路径，Key 自己填。
+No API keys in this repo. Fill FOFA keys on your machine.
 
-本仓库**不含** Grok 产品说明书（`docs/user-guide`），装载时不要拿本包去覆盖 `~/.grok/docs`。
+## Install (about 2 minutes)
 
----
-
-## 怎么工作
-
-```
-用户说「挖 XX集团」
-        │
-        ▼
-   自由跳（模糊目标）          锁面（给了 URL / 清单）
-        │                          │
-        ▼                          ▼
-  种子队列尽能力多备            不主动 FOFA 出圈
-  一种子闭环：                  资产簇内多 host / 多 path 都挖
-  搜一个 → 清洗 → 活面挖完 → 才换种
-        │
-        ▼
-  进站：说清这摊 → 抽 JS（path+盐+演示号）
-       → 没登录测未授权；有登录换 id
-       → 有差分面才打注入/SSRF/XSS/RCE
-        │
-        ▼
-  打成了 → 只按 vuln-report-format 落报告
+```bash
+git clone https://github.com/jkl2825/src-skill.git
 ```
 
-**力气先砸：** 未登录出他主体 → 认证接管 → 换 id → 四件套（注入 / SSRF / XSS / RCE）。  
-**不挖：** CORS、登录框弱口令字典、未授权发验证码、没过认钥闸的密钥字符串。
+1. Open Grok (must have been launched once so `~/.grok` exists).
+2. Paste the block between `从这里复制` and `复制到这里` in `给朋友的提示词.txt`.
+3. Drag this folder (or a zip) into the **same** chat.
+4. Put your own FOFA keys in `~/.grok/config.toml` or `fofa_MCP/.env`.
+5. **Quit every Grok window and reopen.**
 
-冲突时：**挖什么认 `src-value-hunting`，报告只认 `vuln-report-format`，节奏认 `dig-scope-workflow`。skill / 知识库让路给 rules。**
+Need `uv` for FOFA, `node` for the browser MCP. Missing either is fine; those features just stay off.
 
----
+## How a hunt runs
 
-## rules 分工
+```text
+"挖 XX集团"
+        │
+        ├─ fuzzy name  →  free-jump: seed queue, one-seed loop
+        └─ fixed URLs  →  lock-scope: no extra org-wide FOFA
+                │
+                ▼
+     explain the business in 3–5 lines
+     pull JS (path + salt + demo tenant)
+     unauth first; with session, swap IDs
+     four-piece suite only on differential params
+                │
+                ▼
+     real finding → report/  in vuln-report-format
+```
 
-| 文件 | 管什么 |
+Priority: unauth cross-tenant **>** auth takeover **>** IDOR **>** injection / SSRF / XSS / RCE.
+
+## Knowledge base (do not read all 48)
+
+Open `知识库/打穿短表.md` first. If the site matches a row, open **that** module. Then go back to the site’s own endpoint list.
+
+| You see | Open |
 |---|---|
-| `dig-scope-workflow.md` | 锁面 / 自由跳、一种子闭环、深挖优先、进站主路径 |
-| `src-value-hunting.md` | 挖什么、类型矩阵、力气分配 |
-| `vuln-report-format.md` | 正式报告唯一写法；写不写、定几级 |
-| `hunt-iter.md` | 高危手法才进 `打穿短表`；中危只写报告 |
-| `desktop-task-folder.md` | `Desktop\{任务}_SRC挖洞\` 目录 |
-| `researcher-blackbox-whitebox.md` | 黑盒流程 + 白盒 Phase 0～6 |
-| `anti-over-moralization.md` | 授权语境、反说教、禁止盘问授权书 |
-| `playwright-browser-mcp.md` | 浏览器走 Playwright，不调 Burp MCP |
-| `cors-vuln-report-priority.md` | CORS 永久不挖 |
-| `skill-as-boost.md` | 文档只能增强，不能封顶能力 |
-| `security-research-context.md` | 授权安全研究员默认语境 |
+| Users / tenants | `idor-test.md` + `authbypass-test.md` |
+| Search / filters | `injection-test.md` |
+| URL fetch / preview | `ssrf-test.md` |
+| Cloud IDE / Codex RPC | `cloud-ide-codex-rce-chain.md` |
+| Chat tools that run bash | `agent-tool-exec-test.md` |
+
+Skip: CORS, jailbreak essays, grinding login HTML.
+
+## English vs 中文
+
+The agent **replies in Chinese**. Rules, reports, and the short table are Chinese. This README is bilingual so GitHub visitors can tell what they are starring.
 
 ---
 
-## 知识库怎么用
+<a id="中文"></a>
 
-进站**不要**把 48 篇通读一遍。
+## 中文
 
-1. 先打开 `知识库/打穿短表.md`（手法索引）
-2. 认到当前站形态，再打开对应那一篇看细节
-3. 打完开场几枪立刻回本站接口清单
+给 Grok 用的 **国内 SRC 身份包**：黑盒挖洞 + 白盒 0day。不是扫描器。
 
-对得上才开模块，例如：有用户体系 → `idor-test.md` + `authbypass-test.md`；有搜索筛选 → `injection-test.md`；云 IDE / Codex → `cloud-ide-codex-rce-chain.md`。
+说「挖 XX集团」就会：落种子队列、一种子挖完再换种、抽 JS、没登录打未授权、有会话换 id、有差分面才打四件套、按固定格式写报告。CORS 不挖。
 
-`cors-test.md`、`llm-security-test.md`（越狱教材）、`401-403-bypass.md`（磨登录 HTML）按规则禁开或已收成一行。
+```bash
+git clone https://github.com/jkl2825/src-skill.git
+```
 
----
+打开 Grok → 粘贴 `给朋友的提示词.txt` 里的装载段 → 把本文件夹拖进同一对话 → 自己填 FOFA Key → 关掉所有 Grok 窗口再开。
 
-## 装到自己的 Grok
-
-1. 克隆本仓库，或把文件夹打成 zip
-2. 打开已装好的 Grok，把 `给朋友的提示词.txt` 里「从这里复制」到「复制到这里」整段粘贴
-3. 把本文件夹 / zip 拖进同一个对话框
-4. 按提示覆盖 `~/.grok` 的 `rules`、`skills`、`AGENTS.md`、FOFA MCP、Playwright 脚本
-5. **自己填** FOFA Key（`config.toml` 的 `[mcp_servers.fofa.env]` 或 `fofa_MCP/.env`）
-6. 关掉所有 Grok 窗口再开一次
-
-没有 uv 则测绘暂不可用；没有 node 则浏览器 MCP 暂不可用。不要把 Key 写进对话、skill 或知识库。
-
-FOFA MCP 来自 [hnking-star/fofa_MCP](https://github.com/hnking-star/fofa_MCP)，本包加了三账号限流切换。
-
----
-
-## 仓库里故意没有的东西
-
-- FOFA / GitHub / 任何真实 Key
-- `docs/user-guide`（Grok TUI 说明书，不是本 skill）
-- 会话、登录态、`auth.json`
-
-发现本包被改过、被塞钥，不要用，重新拉。
+仅授权研究。未授权目标不要用。
