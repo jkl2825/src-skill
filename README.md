@@ -1,6 +1,6 @@
 # src-skill
 
-给 [Grok](https://grok.com) / Claude Code 类 Agent 用的 **国内 SRC 黑盒挖洞 + 白盒 0day 审计** 身份包。
+给 [Grok](https://grok.com) / Claude Code 类 Agent 用的 **中国 SRC 黑盒挖洞 + 白盒 0day 审计** 身份包。
 
 不是扫描器，也不是「每个 path 喷 `'`」。核心是：理解业务和代码意图，找开发者认知盲区；假洞不堆、低危不交、CORS 不挖。
 
